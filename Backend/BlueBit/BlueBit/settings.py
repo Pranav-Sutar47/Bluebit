@@ -150,7 +150,17 @@ AUTH_USER_MODEL = "authentication.User"
 
 # REST Framework Configuration
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [],
-    "DEFAULT_PERMISSION_CLASSES": [],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (  # Change this
+        'rest_framework.permissions.AllowAny',  # Allows unauthenticated access by default
+    ),
 }
 
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),  # 1 day instead of 5 minutes
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # 7 days
+}
