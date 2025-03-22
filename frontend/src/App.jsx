@@ -1,10 +1,14 @@
+import { Button } from '@/components/ui/button';
 import Test from './pages/Test';
+import { MailOpen } from "lucide-react"
 
 function App() {
  
   return (
     <>
-   <h1 className='text-3xl'>Hello</h1>
+      <Button>
+        <MailOpen /> Login with Email
+      </Button>
    <Test/>
    </>
   )
