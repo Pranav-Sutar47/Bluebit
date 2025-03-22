@@ -1,14 +1,22 @@
-import React, { useState } from "react";
-import Test from "./pages/Test";
+import { Button } from '@/components/ui/button'
+import Test from './pages/Test';
+import Landing from './pages/LandingPage'
+import { MailOpen } from "lucide-react"
 
 function App() {
 
 
   return (
-    <div>
-      <Test/>
-    </div>
-  );
-}
+    <>
+      {/* <Button>
+        <MailOpen /> Login with Email
+      </Button>
+   <Test/> */}
+      <Landing></Landing>
 
+   </>
+  )
+}
 export default App;
+
+
