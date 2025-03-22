@@ -6,14 +6,20 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=255, null=True, blank=True)
 
+    # Medical Fields optional fields
+    current_disease = models.TextField(null=True, blank=True)
+    past_disease = models.TextField(null=True, blank=True)
+    allergy_information = models.TextField(null=True, blank=True)
+    surgical_procedure = models.TextField(null=True, blank=True)
+
     groups = models.ManyToManyField(
         "auth.Group",
-        related_name="authentication_users",  # Fixes the conflict
+        related_name="authentication_users",
         blank=True
     )
     user_permissions = models.ManyToManyField(
         "auth.Permission",
-        related_name="authentication_users_permissions",  # Fixes the conflict
+        related_name="authentication_users_permissions",
         blank=True
     )
 
