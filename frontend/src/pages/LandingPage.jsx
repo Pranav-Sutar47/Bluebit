@@ -5,11 +5,10 @@ import Features from '../components/ui/FeaturesSection';
 
 const LandingPage = () => {
   // You would normally get this from your auth provider
-  const user = null; // Set to null for logged out state, or an object with user data when logged in
+  //const user = null; // Set to null for logged out state, or an object with user data when logged in
   
   return (
     <div className="min-h-screen bg-white">
-      <Navbar user={user} />
       <Hero />
       <Features />
       
