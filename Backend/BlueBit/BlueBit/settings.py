@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'medi',
-    'authetication',
+    'authentication',
     'corsheaders',
 ]
 
@@ -50,6 +50,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "BlueBit.middleware.remove_coop_header.RemoveCOOPHeaderMiddleware" #To remove O-auth cors error
+]
+
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # React frontend
 ]
 
 ROOT_URLCONF = 'BlueBit.urls'
@@ -124,3 +131,26 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+# Firebase Authentication
+import firebase_admin
+from firebase_admin import credentials
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+FIREBASE_CREDENTIALS = os.path.join(BASE_DIR, "firebase-admin-sdk.json")
+
+cred = credentials.Certificate(FIREBASE_CREDENTIALS)  # 🔹 Add your Firebase Admin SDK JSON file
+firebase_admin.initialize_app(cred)
+
+AUTH_USER_MODEL = "authentication.User"
+
+# REST Framework Configuration
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [],
+    "DEFAULT_PERMISSION_CLASSES": [],
+}
+
