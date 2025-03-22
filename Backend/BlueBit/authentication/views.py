@@ -1,11 +1,9 @@
-from django.contrib.auth import get_user_model
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from firebase_admin import auth
+from .models import User
 from .serializers import UserSerializer
-
-User = get_user_model()
 
 @api_view(["POST"])
 def firebase_auth(request):
@@ -19,7 +17,9 @@ def firebase_auth(request):
         user, created = User.objects.get_or_create(firebase_uid=uid, defaults={"email": email, "name": name})
 
         serializer = UserSerializer(user)
-        return Response({"message": "User authenticated", "user": serializer.data}, status=status.HTTP_200_OK)
+        message = "User authenticated" if not created else "New user created"
+
+        return Response({"message": message, "user": serializer.data}, status=status.HTTP_200_OK)
 
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
