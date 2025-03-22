@@ -4,7 +4,8 @@ import Landing from './pages/LandingPage'
 import { MailOpen } from "lucide-react"
 
 function App() {
- 
+
+
   return (
     <>
       {/* <Button>
