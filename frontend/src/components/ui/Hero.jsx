@@ -4,7 +4,7 @@ import SparklesEffect from './SparklesEffect';
 
 const Hero = () => {
   return (
-    <section className="relative pt-32 pb-20 overflow-hidden">
+    <section className="relative pt-32 ml-10 mr-10 pb-20 overflow-hidden">
       {/* Background gradient effect */}
       <div className="absolute inset-0 bg-gradient-to-b from-blue-50 to-white -z-10"></div>
       
@@ -270,7 +270,7 @@ const Hero = () => {
                 <img 
                   src="https://www.klippa.com/wp-content/uploads/2024/04/medical-prescription-ocr.png" 
                   alt="Doctor using DoseWise on laptop" 
-                  className="rounded-2xl shadow-lg" 
+                  className="rounded-2xl " 
                 />
               </motion.div>
             </motion.div>

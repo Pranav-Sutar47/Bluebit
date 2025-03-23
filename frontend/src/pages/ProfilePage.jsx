@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, Plus, User, History, Check, ChevronRight, Shield, Clock, FileText } from 'lucide-react';
+
 
 // SparklesEffect component
 const SparklesEffect = ({ children }) => {
