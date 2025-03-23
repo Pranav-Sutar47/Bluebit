@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AuthButton from './AuthButton';
 import ConsultButton from './ConsultButton';
+import { Link, NavLink } from 'react-router-dom';
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -40,14 +41,14 @@ const Navbar = () => {
             <div className="flex items-center justify-between">
               {/* Logo */}
               <div className="flex items-center">
-                <a href="/" className="flex items-center">
+                <Link to="/" className="flex items-center">
                   <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">DoseWise</span>
-                </a>
+                </Link>
               </div>
               {/* Navigation Links */}
               <nav className="hidden md:flex items-center space-x-8">
-                <NavLink href="/prescriptions">Prescriptions</NavLink>
-                <NavLink href="/chatbot">Chatbot</NavLink>
+                <NavLink to="/prescriptions">Prescriptions</NavLink>
+                <NavLink to="/chatbot">Chatbot</NavLink>
               </nav>
               {/* Auth and Consult Buttons */}
               <div className="flex items-center space-x-4">
@@ -62,7 +63,7 @@ const Navbar = () => {
   );
 };
 
-const NavLink = ({ href, children }) => {
+const NavLinks = ({ href, children }) => {
   return (
     <a href={href} className="relative text-gray-700 hover:text-gray-900 font-medium transition-colors duration-200 group">
       {children}
