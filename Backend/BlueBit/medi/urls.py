@@ -1,7 +1,9 @@
 from django.urls import path
-from . import views  
+from .views import home
+from .views import process_ocr
 
 urlpatterns = [
-    path('', views.home, name='home'),
-    path('process_ocr/', views.process_ocr, name='process_ocr'),
+    path('', home, name='home'),
+    # path('process_ocr/', views.process_ocr, name='process_ocr'),
+    path('api/process_ocr/', process_ocr, name='process_ocrendpoint')
 ]
