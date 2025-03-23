@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OCR Result</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Extracted Text</h1>
+      <p><strong>Language:</strong> {{ language }}</p>
+      <img src="{{ file_url }}" alt="Uploaded Image" width="300" /><br />
+      <textarea rows="10" cols="50">{{ extracted_text }}</textarea><br />
+      <p>The meds are : {{ medicines }}</p>
+      
+      <a href="/medi/process_ocr/">Upload Another Image</a>
+    </div>
+  </body>
+</html>

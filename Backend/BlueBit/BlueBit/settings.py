@@ -165,3 +165,13 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),  # 1 day instead of 5 minutes
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # 7 days
 }
+
+
+
+
+
+
+
+
+
+GENERATIVE_AI_API_KEY = 'AIzaSyBsRoN4hXT6gQVl5fFFox37_IkVun2-jJw'
