@@ -83,14 +83,14 @@ const AuthButton = () => {
           </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuLabel className='font-[Work-Sans] '>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {/* Add Profile link here */}
-          <DropdownMenuItem onClick={() => navigate("/profile")}>
+          <DropdownMenuItem className='font-[Work-Sans] ' onClick={() => navigate("/profile")}>
   Profile
 </DropdownMenuItem>
 
-          <DropdownMenuItem onClick={logOut}>Log Out</DropdownMenuItem>
+          <DropdownMenuItem onClick={logOut} className='font-[Work-Sans] '>Log Out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     );

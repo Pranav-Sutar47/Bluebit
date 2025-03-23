@@ -4,6 +4,7 @@ import Landing from './pages/LandingPage'
 import Prescription from './pages/Prescription'
 import { MailOpen } from "lucide-react"
 import AppState from './context/AppState';
+import Chat from './pages/ChatPage'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/ui/Navbar';
 import ProfilePage from './pages/ProfilePage';
@@ -24,6 +25,7 @@ function App() {
           <Route path='/profile' element={<ProfilePage/>}/>
           <Route path='/call' element={<ConsultPage/>}/>
           <Route path="/video-call" element={<VideoCall />} />
+          <Route path='/chatbot' element={<Chat/>}/>
         </Routes>
       </BrowserRouter>
    </AppState>

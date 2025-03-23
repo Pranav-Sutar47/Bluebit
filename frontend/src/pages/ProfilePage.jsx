@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { X, Plus, User, History, Check, ChevronRight, Shield, Clock, FileText } from 'lucide-react';
 import AppContext from '@/context/AppContext';
 import axios from 'axios';
 import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
+
 
 // SparklesEffect component
 const SparklesEffect = ({ children }) => {
