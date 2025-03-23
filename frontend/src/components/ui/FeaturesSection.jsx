@@ -1,7 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
 const FeatureCard = ({ icon, title, description, delay }) => {
+
   return (
     <motion.div 
       className="bg-white rounded-xl p-8 shadow-lg group hover:shadow-xl transition-all duration-300 relative overflow-hidden"
@@ -49,6 +52,21 @@ const FeatureCard = ({ icon, title, description, delay }) => {
 };
 
 const Features = () => {
+
+  const navigate = useNavigate();
+  
+  const {toast} = useToast();
+
+  const handleClick = ()=>{
+    if(localStorage.getItem('token'))
+      navigate('/prescriptions');
+    else 
+    toast({
+      className: "text-white bg-teal-800",
+      title: "Plase Login first!"
+    });
+  }
+
   return (
     <section id="features" className="py-20 bg-gradient-to-b from-white to-blue-50">
       <div className="container mx-auto px-6">
@@ -131,6 +149,7 @@ const Features = () => {
               boxShadow: "0 20px 25px -5px rgba(59, 130, 246, 0.4), 0 8px 10px -6px rgba(59, 130, 246, 0.2)"
             }}
             whileTap={{ scale: 0.98 }}
+            onClick={handleClick}
           >
             Get Started With Our OCR Technology
           </motion.button>

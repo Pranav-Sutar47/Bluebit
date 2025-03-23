@@ -34,6 +34,7 @@ const AuthButton = () => {
         description: "User Logged Out Successfully!",
         className: "bg-green-500 text-white",
       });
+      navigate('/');
   }
 
   const handleLogin = async () => {
@@ -85,7 +86,10 @@ const AuthButton = () => {
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {/* Add Profile link here */}
-          <DropdownMenuItem onClick={navigate()}>Profile</DropdownMenuItem> 
+          <DropdownMenuItem onClick={() => navigate("/profile")}>
+  Profile
+</DropdownMenuItem>
+
           <DropdownMenuItem onClick={logOut}>Log Out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
