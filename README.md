@@ -1,4 +1,3 @@
-
 DOSEWISE
 AI-Powered Prescription Scanner & Generic Medicine Recommender
 DOSEWISE is an innovative healthcare platform that leverages machine learning, natural language processing, and computer vision to make healthcare more accessible and affordable. Our solution helps users identify cost-effective generic alternatives to brand-name medications while providing access to healthcare professionals through an integrated appointment system.
