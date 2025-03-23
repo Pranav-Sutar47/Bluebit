@@ -6,6 +6,7 @@ import { MailOpen } from "lucide-react"
 import AppState from './context/AppState';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/ui/Navbar';
+// import { ConsultPage } from './components/ui/ConsultPage';
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
           <Route path='/' element={<Navigate to={'/home'}/>}/>
           <Route path='/home' element={<Landing/>}/>
           <Route path='/prescriptions' element={<Prescription/>}/>
+          {/* <Route path='/consult' element={<ConsultPage/>}/> */}
         </Routes>
       </BrowserRouter>
    </AppState>
