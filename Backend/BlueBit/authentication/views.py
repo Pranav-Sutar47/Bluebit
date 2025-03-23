@@ -6,6 +6,11 @@ from .models import User
 from .serializers import UserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
+import requests
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import time
+
 
 def get_tokens_for_user(user):
     """Generate JWT tokens (access & refresh) for the user."""
@@ -96,3 +101,36 @@ def get_user_details(request):
 
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+#API for genrating meetings
+
+DAILY_API_KEY = "7df1dfd0dbe38f769331c076ae441b50df61b69a951de918cad5a069af651eec"
+
+@csrf_exempt
+@permission_classes([])
+def create_meeting(request):
+    url = "https://api.daily.co/v1/rooms"
+    headers = {
+        "Authorization": f"Bearer {DAILY_API_KEY}",
+        "Content-Type": "application/json",
+    }
+    exp_time = int(time.time()) + 86400  # 24 hours from now
+
+    data = {
+        "privacy": "public",  # Anyone with the link can join
+        "properties": {
+            "exp": exp_time
+        }
+    }
+
+    response = requests.post(url, json=data, headers=headers)
+    room_data = response.json()
+
+    # ✅ Debugging logs
+    print("Daily.co API Response:", room_data)
+
+    if response.status_code == 200:
+        return JsonResponse({"url": room_data.get("url", "No URL returned")})  # Fix: Ensure "url" is returned
+    else:
+        return JsonResponse({"error": room_data}, status=response.status_code)

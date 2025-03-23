@@ -14,7 +14,7 @@ const ConsultButton = () => {
         boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.5)"
       }}
       whileTap={{ scale: 0.95 }}
-      onClick={()=>navigate('/call')}
+      onClick={()=>navigate('/video-call')}
     >
       Consult Now
     </motion.button>

@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/ui/Navbar';
 import ProfilePage from './pages/ProfilePage';
 import { ConsultPage } from './components/ui/ConsultPage';
+import VideoCall from './pages/VideoCall';
 
 
 function App() {
@@ -22,11 +23,10 @@ function App() {
           <Route path='/prescriptions' element={<Prescription/>}/>
           <Route path='/profile' element={<ProfilePage/>}/>
           <Route path='/call' element={<ConsultPage/>}/>
+          <Route path="/video-call" element={<VideoCall />} />
         </Routes>
       </BrowserRouter>
    </AppState>
   )
 }
 export default App;
-
-
