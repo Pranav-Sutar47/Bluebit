@@ -85,7 +85,10 @@ const AuthButton = () => {
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {/* Add Profile link here */}
-          <DropdownMenuItem onClick={navigate()}>Profile</DropdownMenuItem> 
+          <DropdownMenuItem onClick={() => navigate("/profile")}>
+  Profile
+</DropdownMenuItem>
+
           <DropdownMenuItem onClick={logOut}>Log Out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
