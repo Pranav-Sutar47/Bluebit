@@ -1,112 +1,148 @@
-DOSEWISE
-AI-Powered Prescription Scanner & Generic Medicine Recommender
-DOSEWISE is an innovative healthcare platform that leverages machine learning, natural language processing, and computer vision to make healthcare more accessible and affordable. Our solution helps users identify cost-effective generic alternatives to brand-name medications while providing access to healthcare professionals through an integrated appointment system.
+Overview
+
+DOSEWISE is an AI-powered platform that leverages machine learning, natural language processing, and computer vision to assist users in identifying affordable generic alternatives for prescribed medicines. It also provides video consultation with doctors and chatbot support for health-related guidance.
+
 Features
-1. Prescription Scanner & Generic Alternative Finder 💊
 
-Accepts prescriptions in multiple languages as PDF or image
-Uses computer vision and OCR for text extraction
-Leverages LLMs to identify medicine names
-Employs RAG model to search vector database for affordable generic alternatives
-Provides up to 5 substitute options for each medicine
+1. Prescription Scanning & Generic Medicine Recommendation
 
-2. Healthcare Professional Connect 👨‍⚕️
+Accepts prescriptions in multiple languages as PDFs or images.
 
-View doctor availability through interactive scheduling interface
-In-app messaging system to contact healthcare providers
-Integrated video calling for remote consultations
-Real-time expert medical advice
+Uses OCR and Computer Vision to extract text from prescriptions.
 
-Project Setup
+Recognizes medicine names with LLM (Large Language Model).
+
+Searches for generic alternatives using a RAG model and vector database.
+
+Provides top 5 affordable substitutes.
+
+2. Doctor Consultation & Appointment Scheduling
+
+Patients can view available doctor slots through an intuitive UI.
+
+Users can contact doctors via a built-in messaging system.
+
+Video consultation with doctors through the platform.
+
+3. AI-Powered Chatbot
+
+Provides health advice and helps with medicine-related queries.
+
+Assists in scheduling appointments and basic medical guidance.
+
+Tech Stack
+
+Backend: Django (Python)
+
+Frontend: React (JavaScript)
+
+OCR & Computer Vision: OpenCV, Tesseract OCR
+
+Machine Learning: RAG Model, LLM (Large Language Model)
+
+Database: PostgreSQL, Vector Database (e.g., FAISS)
+
+Video Consultation: WebRTC / Jitsi
+
+Deployment: Docker, AWS / Firebase
+
+Installation & Setup
+
 Prerequisites
 
-Node.js (v16.x or higher)
-npm (v8.x or higher)
-MongoDB (local or Atlas)
-Python 3.8+ (for ML components)
+Ensure you have the following installed:
 
-Installation
+Node.js & npm
 
-Clone the repository
+Python 3 & pip
 
-bashCopygit clone https://github.com/yourusername/dosewise.git
-cd dosewise
+PostgreSQL
 
-Install backend dependencies
+Docker (if deploying with containers)
 
-bashCopynpm install
+Backend (Django Server)
 
-Set up Python environment and install ML dependencies
-
-bashCopy# Create and activate virtual environment (optional but recommended)
+cd backend
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install Python dependencies
 pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
 
-Set up environment variables
-Create a .env file in the root directory and add:
+Frontend (React)
 
-CopyPORT=3000
-MONGODB_URI=mongodb://localhost:27017/dosewise
-JWT_SECRET=your_jwt_secret
-OPENAI_API_KEY=your_openai_api_key
+cd frontend
+npm install
+npm run dev
 
-Start the development server
+Running OCR & ML Services
 
-bashCopynpm run dev
-The application should now be running at http://localhost:3000
-Usage
-Prescription Scanning
+cd ml_services
+python ocr_service.py  # Runs OCR extraction
+python medicine_recommender.py  # Runs ML model for generic medicine recommendation
 
-Navigate to the "Scan Prescription" section
-Upload your prescription (PDF or image)
-Wait for the system to process the prescription
-Review the identified medications and their generic alternatives
-Save or export your results
+Running the Chatbot Service
 
-Doctor Consultation
+cd chatbot
+npm install
+npm start
 
-Browse available healthcare providers
-Check their schedule and available time slots
-Book an appointment for a video consultation
-Use the in-app messaging to communicate with healthcare providers
+Running Video Consultation Service
 
-Technology Stack
-Frontend
+cd video_service
+npm install
+npm start
 
-React.js
-Tailwind CSS
-Axios
+API Endpoints
 
-Backend
+Endpoint
 
-Node.js
-Express.js
-MongoDB
-Socket.io (for real-time communication)
+Method
 
-Machine Learning
+Description
 
-TensorFlow/PyTorch
-OpenAI API
-Langchain
-OCR (Tesseract)
-Vector database (Pinecone/Milvus)
+/api/upload-prescription
+
+POST
+
+Uploads prescription (PDF/Image)
+
+/api/extract-medicine
+
+POST
+
+Extracts medicine names from OCR
+
+/api/recommend-medicine
+
+POST
+
+Fetches 5 generic medicine substitutes
+
+/api/doctors
+
+GET
+
+Fetches available doctors and slots
+
+/api/book-appointment
+
+POST
+
+Books an appointment with a doctor
+
+/api/chatbot
+
+POST
+
+AI Chatbot for medical guidance
+
+Deployment
+
+To deploy using Docker:
+
+docker-compose up --build
 
 Contributing
 
-Fork the repository
-Create your feature branch (git checkout -b feature/amazing-feature)
-Commit your changes (git commit -m 'Add some amazing feature')
-Push to the branch (git push origin feature/amazing-feature)
-Open a Pull Request
-
-License
-This project is licensed under the MIT License - see the LICENSE file for details.
-Acknowledgments
-
-Thanks to all healthcare professionals who provided domain expertise
-Special thanks to our hackathon mentors
-All open-source libraries and tools that made this project possible
+Feel free to contribute! Fork the repo, create a branch, and submit a PR.
