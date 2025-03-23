@@ -7,6 +7,7 @@ import AppState from './context/AppState';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/ui/Navbar';
 import ProfilePage from './pages/ProfilePage';
+import Chat from './pages/ChatPage'
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
           <Route path='/home' element={<Landing/>}/>
           <Route path='/prescriptions' element={<Prescription/>}/>
           <Route path='/profile' element={<ProfilePage/>}/>
+          <Route path='/chatbot' element={<Chat/>}/>
         </Routes>
       </BrowserRouter>
    </AppState>

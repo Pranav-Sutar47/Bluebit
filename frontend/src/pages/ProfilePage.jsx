@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { X, Plus, User, History, Check, ChevronRight, Shield, Clock, FileText } from 'lucide-react';
+import AppContext from '@/context/AppContext';
+import axios from 'axios';
+import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
 
 
 // SparklesEffect component
@@ -24,53 +27,43 @@ const SparklesEffect = ({ children }) => {
 };
 
 const ProfilePage = () => {
-  const [user, setUser] = useState({
-    email: '',
-    username: ''
-  });
+  // const [user, setUser] = useState({
+  //   email: '',
+  //   username: ''
+  // });
   
   const [isViewHistoryOpen, setIsViewHistoryOpen] = useState(false);
   const [isAddHistoryOpen, setIsAddHistoryOpen] = useState(false);
+  
   const [medicalHistory, setMedicalHistory] = useState({
-    currentDisease: '',
-    pastDisease: '',
-    allergyInformation: '',
-    surgicalProcedure: ''
+    current_disease: '',
+    past_disease: '',
+    allergy_information: '',
+    surgical_procedure: ''
   });
-  const [historyData, setHistoryData] = useState([]);
+
+  const [historyData, setHistoryData] = useState([{ 
+    allergyInformation: "", 
+    currentDisease: "", 
+    pastDisease: "", 
+    surgicalProcedure: "" 
+  }]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  const {user,fetchUser} = useContext(AppContext);
+
 
   // Fetch user data and medical history
   useEffect(() => {
     const fetchUserData = async () => {
       setIsLoading(true);
       try {
-        const token = localStorage.getItem('token');
-        
-        const response = await fetch('http://127.0.0.1:8000/api/auth/get-user-details/', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          
-          setUser({
-            email: data.email || '',
-            username: data.username || ''
-          });
-          
-          if (data.medicalHistory && data.medicalHistory.length > 0) {
-            setHistoryData(data.medicalHistory);
-          }
-        } else {
-          console.error('Failed to fetch user data');
-        }
+        await fetchUser();
+        setIsLoading(false);
       } catch (error) {
+        setIsLoading(false);
         console.error('Error fetching user data:', error);
       } finally {
         setIsLoading(false);
@@ -88,37 +81,61 @@ const ProfilePage = () => {
     });
   };
 
+  useEffect(() => {
+    setHistoryData((prevData) => {
+      const newData = { ...prevData[0] }; // Clone the first object safely
+  
+      if (user.allergy_information != null) {
+        newData.allergyInformation = user.allergy_information;
+      }
+      if (user.current_disease != null) {
+        newData.currentDisease = user.current_disease;
+      }
+      if (user.past_disease != null) {
+        newData.pastDisease = user.past_disease;
+      }
+      if (user.surgical_procedure != null) {
+        newData.surgicalProcedure = user.surgical_procedure;
+      }
+  
+      return [newData]; // Update state properly
+    });
+  }, [user]);
+
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      const token = localStorage.getItem('token');
-      
-      const response = await fetch('http://127.0.0.1:8000/api/auth/update-medical-details/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(medicalHistory)
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
+      const token = localStorage.getItem('token');     
+
+      const url = String(import.meta.env.VITE_BASEURL) + 'auth/update-medical-details/';
+
+      const response = await axios.post(
+        url,
+        medicalHistory,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.status === 200) {
         setSubmitSuccess(true);
         
         // Update history data with the new entry
-        if (data.medicalHistory) {
-          setHistoryData(data.medicalHistory);
+        if (response.data) {
+            await fetchUser();
         }
         
         setTimeout(() => {
           setIsAddHistoryOpen(false);
           setSubmitSuccess(false);
           setMedicalHistory({
-            currentDisease: '',
-            pastDisease: '',
-            allergyInformation: '',
-            surgicalProcedure: ''
+            current_disease: '',
+            past_disease: '',
+            allergy_information: '',
+            surgical_procedure: ''
           });
         }, 1500);
       } else {
@@ -132,7 +149,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen relative pt-16 pb-12 overflow-hidden">
+    <div className="min-h-screen relative mt-5 pt-16 pb-12 overflow-hidden">
       {/* Background gradient effect */}
       <div className="absolute inset-0 bg-gradient-to-b from-blue-50 to-white -z-10"></div>
       
@@ -212,7 +229,7 @@ const ProfilePage = () => {
           </motion.div>
             
           <motion.div 
-            className="absolute bottom-4 left-4 bg-cyan-500 text-white text-xs px-2 py-1 rounded-lg shadow-lg z-10"
+            className="absolute bottom-2 left-4 bg-cyan-500 text-white text-xs px-2 py-1 rounded-lg shadow-lg z-10"
             animate={{
               y: [0, 5, 0],
             }}
@@ -235,7 +252,12 @@ const ProfilePage = () => {
                   boxShadow: "0 20px 25px -5px rgba(59, 130, 246, 0.4), 0 8px 10px -6px rgba(59, 130, 246, 0.2)"
                 }}
               >
-                <User size={64} className="text-gray-400" />
+                <Avatar className="h-full w-full flex items-center justify-center">
+                <AvatarFallback className="text-4xl sm:text-5xl font-semibold text-gray-600">
+                  {user?.name?.charAt(0)}
+                </AvatarFallback>
+                </Avatar>
+                {/* <User size={64} className="text-gray-400" /> */}
               </motion.div>
             </div>
           </div>
@@ -284,7 +306,7 @@ const ProfilePage = () => {
                     whileTap={{ scale: 0.98 }}
                   >
                     <Plus size={16} className="mr-2" />
-                    Add History
+                    Add Medical History
                   </motion.button>
                 </div>
               </div>
@@ -303,7 +325,7 @@ const ProfilePage = () => {
                   >
                     <label className="block text-xs font-medium text-blue-600 mb-1">Username</label>
                     <div className="bg-white border border-blue-100 rounded-md px-3 py-2 text-gray-700 font-medium text-sm">
-                      {user.username}
+                      {user.name}
                     </div>
                   </motion.div>
                   
@@ -339,7 +361,7 @@ const ProfilePage = () => {
                       </div>
                       <div>
                         <p className="text-sm text-gray-700 font-medium">Last updated</p>
-                        <p className="text-sm text-gray-500">{historyData[0].date}</p>
+                        <p className="text-sm text-gray-500">{historyData[0]?.date || new Date().toLocaleDateString()}</p>
                       </div>
                     </motion.div>
                     
@@ -430,9 +452,9 @@ const ProfilePage = () => {
               <div className="p-6 overflow-y-auto max-h-[calc(80vh-60px)]">
                 {historyData.length > 0 ? (
                   <div className="space-y-4">
-                    {historyData.map((record) => (
+                    {historyData.map((record,index) => (
                       <motion.div 
-                        key={record.id}
+                        key={index}
                         className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-100 rounded-xl p-4 hover:shadow-lg transition-all"
                         whileHover={{ y: -3 }}
                         transition={{ duration: 0.3 }}
@@ -505,9 +527,9 @@ const ProfilePage = () => {
                     <label htmlFor="currentDisease" className="block text-xs font-medium text-blue-600 mb-1">Current Disease</label>
                     <input
                       type="text"
-                      id="currentDisease"
-                      name="currentDisease"
-                      value={medicalHistory.currentDisease}
+                      id="current_disease"
+                      name="current_disease"
+                      value={medicalHistory.current_disease}
                       onChange={handleInputChange}
                       className="block w-full px-3 py-2 border border-blue-200 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-blue-50 text-sm"
                       placeholder="Enter current conditions"
@@ -518,9 +540,9 @@ const ProfilePage = () => {
                     <label htmlFor="pastDisease" className="block text-xs font-medium text-blue-600 mb-1">Past Disease</label>
                     <input
                       type="text"
-                      id="pastDisease"
-                      name="pastDisease"
-                      value={medicalHistory.pastDisease}
+                      id="past_disease"
+                      name="past_disease"
+                      value={medicalHistory.past_disease}
                       onChange={handleInputChange}
                       className="block w-full px-3 py-2 border border-blue-200 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-blue-50 text-sm"
                       placeholder="Enter past conditions"
@@ -531,9 +553,9 @@ const ProfilePage = () => {
                     <label htmlFor="allergyInformation" className="block text-xs font-medium text-blue-600 mb-1">Allergy Information</label>
                     <input
                       type="text"
-                      id="allergyInformation"
-                      name="allergyInformation"
-                      value={medicalHistory.allergyInformation}
+                      id="allergy_information"
+                      name="allergy_information"
+                      value={medicalHistory.allergy_information}
                       onChange={handleInputChange}
                       className="block w-full px-3 py-2 border border-blue-200 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-blue-50 text-sm"
                       placeholder="Enter allergies"
@@ -544,9 +566,9 @@ const ProfilePage = () => {
                     <label htmlFor="surgicalProcedure" className="block text-xs font-medium text-blue-600 mb-1">Surgical Procedure</label>
                     <input
                       type="text"
-                      id="surgicalProcedure"
-                      name="surgicalProcedure"
-                      value={medicalHistory.surgicalProcedure}
+                      id="surgical_procedure"
+                      name="surgical_procedure"
+                      value={medicalHistory.surgical_procedure}
                       onChange={handleInputChange}
                       className="block w-full px-3 py-2 border border-blue-200 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-blue-50 text-sm"
                       placeholder="Enter surgical procedures"

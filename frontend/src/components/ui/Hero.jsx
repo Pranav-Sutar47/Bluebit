@@ -1,8 +1,25 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import SparklesEffect from './SparklesEffect';
+import { useNavigate } from 'react-router-dom';
+import { toast, useToast } from '@/hooks/use-toast';
 
 const Hero = () => {
+
+  const navigate = useNavigate();
+
+  const {toast} = useToast();
+
+  const handleClick = ()=>{
+    if(localStorage.getItem('token'))
+      navigate('/prescriptions');
+    else 
+    toast({
+      className: "text-white bg-teal-800",
+      title: "Plase Login first!"
+    });
+  }
+
   return (
     <section className="relative pt-32 ml-10 mr-10 pb-20 overflow-hidden">
       {/* Background gradient effect */}
@@ -76,6 +93,7 @@ const Hero = () => {
                     boxShadow: "0 20px 25px -5px rgba(59, 130, 246, 0.4), 0 8px 10px -6px rgba(59, 130, 246, 0.2)"
                   }}
                   whileTap={{ scale: 0.98 }}
+                  onClick={handleClick}
                 >
                   Try For Free
                 </motion.button>
