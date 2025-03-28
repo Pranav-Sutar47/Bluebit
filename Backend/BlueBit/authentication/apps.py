@@ -1,6 +1,11 @@
 from django.apps import AppConfig
 
-
-class AutheticationConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
+class AuthenticationConfig(AppConfig):
     name = 'authentication'
+    verbose_name = 'Authentication'
+    
+    def ready(self):
+        try:
+            import authentication.signals  # noqa F401
+        except ImportError:
+            pass

@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'medi',
-    'authentication',
+    'authentication.apps.AuthenticationConfig',
     'corsheaders',
     'rest_framework',
 ]
@@ -80,16 +80,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'BlueBit.wsgi.application'
 
+DATABASES = {}
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# MongoDB Configuration
+import mongoengine
+mongoengine.connect(
+    db='Dosewise',
+    host='mongodb+srv://pranavsutar4747:dosewise123@cluster0.lojftq2.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
+    alias='default'
+)
+
+print("MongoDB connected successfully!")
+
+# AUTH_USER_MODEL = 'authentication.User'
+
+AUTHENTICATION_BACKENDS = [
+    'authentication.backends.MongoAuthBackend',  # custom backend
+]
 
 
 # Password validation
@@ -147,7 +155,7 @@ FIREBASE_CREDENTIALS = os.path.join(BASE_DIR, "firebase-admin-sdk.json")
 cred = credentials.Certificate(FIREBASE_CREDENTIALS)  # 🔹 Add your Firebase Admin SDK JSON file
 firebase_admin.initialize_app(cred)
 
-AUTH_USER_MODEL = "authentication.User"
+# AUTH_USER_MODEL = "authentication.User"
 
 # REST Framework Configuration
 REST_FRAMEWORK = {
@@ -165,13 +173,5 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),  # 1 day instead of 5 minutes
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # 7 days
 }
-
-
-
-
-
-
-
-
 
 GENERATIVE_AI_API_KEY = 'AIzaSyBsRoN4hXT6gQVl5fFFox37_IkVun2-jJw'

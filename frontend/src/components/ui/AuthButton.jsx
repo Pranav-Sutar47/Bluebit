@@ -42,6 +42,8 @@ const AuthButton = () => {
       const result = await signInWithPopup(auth, googleProvider);
       const idToken = await result.user.getIdToken();
 
+      console.log('idToken',idToken);
+
       const url = String(import.meta.env.VITE_BASEURL) + "auth/login/";
 
       const response = await axios.post(
@@ -51,6 +53,8 @@ const AuthButton = () => {
           headers: { "Content-Type": "application/json" },
         }
       );
+
+      console.log('Response',response)
 
       if (response.status === 200) {
         setLogin(true);
