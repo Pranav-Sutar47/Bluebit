@@ -10,9 +10,10 @@ from django.contrib.auth.hashers import make_password
 # Helper function to generate JWT tokens (same as before)
 from rest_framework_simplejwt.tokens import RefreshToken
 
-def get_tokens_for_user(email):
-    refresh = RefreshToken()
-    refresh["email"] = email  # Store email in token manually
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+    refresh["email"] = user.email  #  Store email
+    refresh["user_id"] = str(user.id)  #  Store _id
 
     return {
         "refresh": str(refresh),
@@ -35,6 +36,7 @@ def firebase_auth(request):
         if user:
             if not user.firebase_uid:
                 user.firebase_uid = uid
+                user.active=True
                 user.save()
             message = "User authenticated"
             role = user.role
@@ -43,14 +45,15 @@ def firebase_auth(request):
                 email=email,
                 firebase_uid=uid,
                 name=name,
-                is_active=True
+                is_active=True,
+                active=True
             )
             user.set_password(None)  # Set dummy password
             user.save()
             message = "New user created"
             role = None
 
-        tokens = get_tokens_for_user(user.email)  # Pass email, not user object
+        tokens = get_tokens_for_user(user)  # Pass user object
         serializer = UserSerializer(user)
         
         print(tokens)

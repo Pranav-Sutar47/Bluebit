@@ -29,6 +29,8 @@ app.get('/ping', (req, res) => {
 
 app.use('/api/user',require('./Routes/User.Routes'));
 
+app.use('/api/doctor',require('./Routes/Doctor.Routes'));
+
 app.listen(PORT,'0.0.0.0',()=>{
     console.log(`Server Up and Listen on ${PORT}`);
     setInterval(() => {

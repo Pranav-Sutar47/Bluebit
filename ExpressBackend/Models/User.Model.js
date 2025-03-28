@@ -12,6 +12,10 @@ const userSchema = new mongoose.Schema({
     allergy_information: { type: String, default: "" },
     surgical_procedure: { type: String, default: "" },
 
+    // Other Fields
+    active : {type :Boolean,default: false},
+    suggestions : {type:String,default:''},
+
     // Auth Fields
     is_active: { type: Boolean, default: true },
     is_superuser: { type: Boolean, default: false },

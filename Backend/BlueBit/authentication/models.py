@@ -47,6 +47,10 @@ class User(Document):
     past_disease = fields.StringField(null=True, blank=True)
     allergy_information = fields.StringField(null=True, blank=True)
     surgical_procedure = fields.StringField(null=True, blank=True)
+
+    #Other fields
+    active = fields.BooleanField(default=True)
+    suggestions = fields.StringField(null=True,blank=True)
     
     # Auth Fields
     is_active = fields.BooleanField(default=True) 
