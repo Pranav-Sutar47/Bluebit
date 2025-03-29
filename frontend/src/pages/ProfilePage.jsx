@@ -83,7 +83,7 @@ const ProfilePage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userData, setData] = useState([]); // State to store history data
   const [loading, setLoading] = useState(true);
-
+  const [history,setHistory] = useState([]);
   const { user, fetchUser } = useContext(AppContext);
 
   // Fetch user data and medical history
@@ -375,7 +375,7 @@ const ProfilePage = () => {
                       Username
                     </label>
                     <div className="bg-white border border-blue-100 rounded-md px-3 py-2 text-gray-700 font-medium text-sm">
-                      {data.email}
+                      {user.email}
                     </div>
                   </motion.div>
 

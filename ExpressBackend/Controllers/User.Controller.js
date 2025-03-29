@@ -5,11 +5,15 @@ const ApiError = require("../Utils/ApiError");
 const axios = require('axios');
 
 //Route to get all active patients
-exports.getUsers = asyncHandler(async(req,res)=>{
+exports.getUsers = asyncHandler(async (req, res) => {
     console.log(req.user);
-    const users = await User.find({active:true});
+    
+    const users = await User.find({
+        active: true,
+        $or: [{ role: null }, { role: "user" }] // Excludes "doctor" role
+    });
 
-    res.status(200).json(new ApiResponse(200,'Users fetched',users));
+    res.status(200).json(new ApiResponse(200, 'Users fetched', users));
 });
 
 exports.setUserRole = asyncHandler(async (req, res,next) => {
