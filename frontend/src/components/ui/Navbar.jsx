@@ -130,11 +130,12 @@ const Navbar = () => {
               <nav className="hidden md:flex items-center space-x-8">
                 <NavLink to="/prescriptions">Prescriptions</NavLink>
                 <NavLink to="/chatbot">Chatbot</NavLink>
-                <NavLink to="/get-doctors">Consult</NavLink>
+                <NavLink to="/get-doctors">DocPulse</NavLink>
               </nav>
               {/* Auth and Consult Buttons */}
               <div className="flex items-center space-x-4">
                   <AuthButton/>
+                  <ConsultButton></ConsultButton>
               </div>
             </div>
           </div>
