@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate } from 'react-router-dom';
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import axios from 'axios';
 
 const DoctorRegistration = () => {
@@ -17,6 +17,8 @@ const DoctorRegistration = () => {
     image: null
   });
   const [isLoading, setIsLoading] = useState(false);
+
+  const { toast } = useToast();
 
   const navigate = useNavigate();
 
@@ -55,22 +57,28 @@ const DoctorRegistration = () => {
       const token = localStorage.getItem('token');
 
       // Make API call
-      const response = await axios.post('/api/doctors/register', formDataToSend, {
+      const url = String(import.meta.env.VITE_BACKEND)+`/doctor/add-data`;
+      const response = await axios.post(url, formDataToSend, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
         }
       });
 
-      // Show success toast
-      toast({
-        title: "Registration Successful",
-        description: "Your profile has been created successfully.",
-        variant: "success"
-      });
-
-      // Navigate to dashboard
-      navigate('/dashboard');
+      if(response.status === 201){
+        toast({
+          title: "Registration Successful",
+          description: "Your profile has been created successfully.",
+          variant: "success"
+        });
+        navigate('/dashboard');
+      }else{
+        toast({
+          title:'Registration Unsuccessful',
+          description: response.data.message,
+          variant:'destructive'
+        });
+      }
     } catch (error) {
       // Handle error
       toast({

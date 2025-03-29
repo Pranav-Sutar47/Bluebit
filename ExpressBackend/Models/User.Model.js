@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema({
     // Other Fields
     active : {type :Boolean,default: false},
     suggestions : {type:String,default:''},
+    location: {
+        type: { type: String, enum: ["Point"]},
+        coordinates: { type: [Number]} // [longitude, latitude]
+    },
 
     // Auth Fields
     is_active: { type: Boolean, default: true },

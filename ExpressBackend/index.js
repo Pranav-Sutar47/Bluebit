@@ -5,6 +5,7 @@ require('dotenv').config();
 const app = express();
 const cors = require('cors');
 const axios = require('axios');
+const ApiError = require('./Utils/ApiError');
 
 app.use(cors({
     origin: ["http://localhost:5173"], // Allow all origins
@@ -30,6 +31,14 @@ app.get('/ping', (req, res) => {
 app.use('/api/user',require('./Routes/User.Routes'));
 
 app.use('/api/doctor',require('./Routes/Doctor.Routes'));
+
+app.use((err, req, res, next) => {
+    console.error(err.stack); // Log the error for debugging
+    if (err instanceof ApiError) {
+        return res.status(err.statusCode).json({ error: err.message });
+    }
+    res.status(500).json({ error: "Something went wrong!" });
+});
 
 app.listen(PORT,'0.0.0.0',()=>{
     console.log(`Server Up and Listen on ${PORT}`);

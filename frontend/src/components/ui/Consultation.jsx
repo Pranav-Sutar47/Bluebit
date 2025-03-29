@@ -166,18 +166,63 @@ import {
   DialogDescription,
   DialogFooter 
 } from "@/components/ui/dialog";
+import axios from 'axios';
+import { useToast } from "@/hooks/use-toast";
 
 const ConsultationsComponent = () => {
   const [isDoctorAvailable, setIsDoctorAvailable] = useState(false);
-  const [activeUsers, setActiveUsers] = useState([
-    { _id: "1", name: "Alice Brown", status: "available" },
-    { _id: "2", name: "Bob Smith", status: "busy" },
-    { _id: "3", name: "Charlie Johnson", status: "available" }
-  ]);
+  const [activeUsers, setActiveUsers] = useState([]);
   const [callRequestModalOpen, setCallRequestModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
-  const handleDoctorAvailability = (available) => {
+  const { toast } = useToast();
+
+  const fetchActiveUser = async()=>{
+    try{
+      const token = localStorage.getItem('token');
+      const url = String(import.meta.env.VITE_BACKEND)+"/user/";
+      const response = await axios.get(url,{
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      console.log('rest',response);
+      if(response.status === 200)
+        setActiveUsers(response.data.data);
+      else
+        setActiveUsers([]);
+    }catch(err){
+      console.error('Error at Fetch Active User',err);
+    }
+  } 
+  const handleDoctorAvailability = async(available) => {
+    try{
+      const token = localStorage.getItem('token');
+      const url = String(import.meta.env.VITE_BACKEND)+"/doctor/toggleCall";
+      const response = await axios.get(url,{
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      console.log('res',response);
+      if(response.status === 200){
+        toast({
+          title: "Availiblity Changed to Active",
+          className: "bg-green-500 text-white"
+        });
+        await fetchActiveUser();
+      }
+      else{ 
+        toast({
+          title: "Suggestion Not Added",
+          description: "Error Occured!",
+          variant: "destructive"
+        });
+        setActiveUsers([]);
+      }
+    }catch(err){
+      console.error('Error at HandleDoctorAvailability',err);
+    }
     setIsDoctorAvailable(available);
   };
 
@@ -219,7 +264,7 @@ const ConsultationsComponent = () => {
                   <TableCell>
                     <span className={`
                       px-3 py-1 rounded-full text-xs font-medium
-                      ${user.status === 'available' 
+                      ${user.active === true 
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-yellow-100 text-yellow-800'}
                     `}>
