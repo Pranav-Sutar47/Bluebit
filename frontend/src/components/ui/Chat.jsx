@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { sendMessageToGemini } from '../../services/gemini';
+import AppContext from "@/context/AppContext";
 
 // Chat Message Component
 const ChatMessage = ({ message, isBot }) => {
@@ -55,6 +56,9 @@ const LoadingAnimation = () => {
 
 // Empty Chat State Component
 const EmptyChatState = ({ onSuggestionClick }) => {
+
+  const {login} = useContext(AppContext);
+
   const suggestions = [
     "What are the side effects of Amoxicillin?",
     "How do I properly take Lisinopril?",
@@ -63,7 +67,11 @@ const EmptyChatState = ({ onSuggestionClick }) => {
   ];
 
   return (
+
     <div className="flex flex-col items-center justify-center h-full text-center p-8">
+      {
+      login ? (
+        <>
       <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-white mb-4">
         <BotIcon size={32} />
       </div>
@@ -84,9 +92,16 @@ const EmptyChatState = ({ onSuggestionClick }) => {
           </button>
         ))}
       </div>
-    </div>
-  );
-};
+      </>
+      ):(
+        <div className="mt-[8%] w-full text-center text-xl font-semibold text-red-500 bg-red-100 p-4 rounded-lg shadow-md border border-red-300">
+          🚨 Please Login First 🚨
+        </div>       
+      )
+    }
+  </div>
+  )
+}
 
 // Icon Components (since we might not have Lucide available)
 const SendIcon = ({ size = 24 }) => (

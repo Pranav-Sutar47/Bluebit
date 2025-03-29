@@ -56,9 +56,8 @@ exports.addMedicalDetails = asyncHandler(async(req,res,next)=>{
     if(!user)
         return next(new ApiError('User not found',404));
 
-    const {current_disease,past_disease,allergy_information,surgical_procedure} = req.body;
+    const {current_disease,past_disease,allergy_information,surgical_procedure,location} = req.body;
 
-    const {location} = req.body;
     if(!current_disease || !past_disease || !allergy_information || !surgical_procedure || !location)
         return next(new ApiError('Please Provide all the details',400));
 
@@ -132,11 +131,14 @@ exports.nearbyLocation = asyncHandler(async(req,res,next)=>{
     const user = req.user;
     if(!user)
         return next(new ApiError('User not found',404));
-    const userData = await User.findById(user._id).select("location");
+    const userData = await User.findById(user.user_id).select("location");
+    console.log(userData);
     if (!userData || !userData.location) {
         return next(new ApiError("User location not found", 400));
     }
-    const [longitude, latitude] = userData.location;
+    const [longitude, latitude] = userData.location.coordinates;
+
+    console.log('long->',longitude,'\n lat->',latitude);
 
     try{
         const OSM_API_URL = `https://overpass-api.de/api/interpreter`;

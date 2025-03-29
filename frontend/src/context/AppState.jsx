@@ -11,18 +11,17 @@ export default function AppState(props) {
     const fetchUser = async()=>{
       try{
         const token = localStorage.getItem('token');
-        
-        const url = String(import.meta.env.VITE_BASEURL) + 'auth/get-user-details/';
 
-        const response = await axios.get(url, {
+        const url = String(import.meta.env.VITE_BACKEND)+"/user/get-history";
+        const response = await axios.get(url,{
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
+        console.log(response);
 
         if (response.status === 200) {
-
-          setUser(response.data.user);
+          setUser(response.data.data);
         } else {
           console.log(response);
           setUser({});
