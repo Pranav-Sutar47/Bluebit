@@ -22,23 +22,23 @@ const RoleSelectionDialog = ({ open, onClose, userData }) => {
       const token = localStorage.getItem("token");
       
       // Update user role on backend
-      const response = await axios.patch(
-        `${import.meta.env.VITE_BASEURL}users/update-role`, 
-        { role },
-        {
-          headers: { 
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      // const response = await axios.patch(
+      //   `${import.meta.env.VITE_BASEURL}users/update-role`, 
+      //   { role },
+      //   {
+      //     headers: { 
+      //       'Authorization': `Bearer ${token}`,
+      //       'Content-Type': 'application/json'
+      //     }
+      //   }
+      // );
 
       // Update local storage
-      const updatedUserData = { ...userData, role };
-      localStorage.setItem('userData', JSON.stringify(updatedUserData));
+      // const updatedUserData = { ...userData, role };
+      // localStorage.setItem('userData', JSON.stringify(updatedUserData));
 
       // Navigate based on role
-      if (role === 'doctor') {
+      if (role === 'Doctor') {
         navigate('/register');
       } else {
         navigate('/home');

@@ -5,7 +5,7 @@ import axios from "axios";
 import AppContext from "@/context/AppContext";
 import { useToast } from "@/hooks/use-toast";
 import Notify from './Notify'
-import LoginDialog from './LoginDialog'
+import Login from './LoginDialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
+import LoginDialog from './LoginDialog'
 
 const AuthButton = () => {
   const { login, setLogin } = useContext(AppContext);
@@ -84,11 +85,11 @@ const AuthButton = () => {
             className: "bg-green-500 text-white",
           });
           navigate('/dashboard');
-        }else
-        toast({
-          description: "User Logged In Successfully!",
-          className: "bg-green-500 text-white",
-        });
+        }else{
+        // toast({
+        //   description: "User Logged In Successfully!",
+        //   className: "bg-green-500 text-white",
+         };
       } else {
         toast({
           variant: "destructive",
