@@ -10,6 +10,8 @@ import Navbar from './components/ui/Navbar';
 import ProfilePage from './pages/ProfilePage';
 import { ConsultPage } from './components/ui/ConsultPage';
 import VideoCall from './pages/VideoCall';
+import Dashboard from './pages/Dashboard'
+import DoctorRegistration from './pages/DoctorRegistration';
 
 
 function App() {
@@ -26,6 +28,8 @@ function App() {
           <Route path='/call' element={<ConsultPage/>}/>
           <Route path="/video-call" element={<VideoCall />} />
           <Route path='/chatbot' element={<Chat/>}/>
+          <Route path='/dashboard' element={<Dashboard/>}/>
+          <Route path='/register' element={<DoctorRegistration/>}/>
         </Routes>
       </BrowserRouter>
    </AppState>
