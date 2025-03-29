@@ -8,6 +8,8 @@ export default function AppState(props) {
 
     const [user,setUser] = useState({});
 
+    const [url,setUrl] = useState('');
+
     const fetchUser = async()=>{
       try{
         const token = localStorage.getItem('token');
@@ -32,7 +34,7 @@ export default function AppState(props) {
     }
 
   return (
-    <AppContext.Provider value={{login,setLogin,user,fetchUser}}>
+    <AppContext.Provider value={{login,setLogin,user,fetchUser,url,setUrl}}>
         {props.children}
     </AppContext.Provider>
   )

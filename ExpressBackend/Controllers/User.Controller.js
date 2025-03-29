@@ -138,8 +138,6 @@ exports.nearbyLocation = asyncHandler(async(req,res,next)=>{
     }
     const [longitude, latitude] = userData.location.coordinates;
 
-    console.log('long->',longitude,'\n lat->',latitude);
-
     try{
         const OSM_API_URL = `https://overpass-api.de/api/interpreter`;
         const query = `
@@ -165,4 +163,3 @@ exports.nearbyLocation = asyncHandler(async(req,res,next)=>{
         return next(new ApiError("Error fetching nearby hospitals", 500));
     }
 });
-

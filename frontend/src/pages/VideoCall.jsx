@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import DailyIframe from "@daily-co/daily-js";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { Video, Phone, PhoneOff, Link, Copy, Share2 } from "lucide-react";
+import AppContext from "@/context/AppContext";
 
 const VideoCall = () => {
   const [meetingUrl, setMeetingUrl] = useState("");
@@ -11,6 +12,8 @@ const VideoCall = () => {
   const [linkCopied, setLinkCopied] = useState(false);
 
   const { toast } = useToast();
+
+  const {url,setUrl} = useContext(AppContext);
 
   const copyToClipboard = async () => {
     try {
@@ -41,6 +44,8 @@ const VideoCall = () => {
       }
 
       setMeetingUrl(response.data.url);
+
+      setUrl(response.data.url);
 
       toast({
         description: (

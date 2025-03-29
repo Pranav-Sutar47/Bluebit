@@ -148,7 +148,7 @@
 
 // export default ConsultationsComponent;
 
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { 
   Table, 
   TableBody, 
@@ -168,6 +168,7 @@ import {
 } from "@/components/ui/dialog";
 import axios from 'axios';
 import { useToast } from "@/hooks/use-toast";
+import AppContext from '@/context/AppContext';
 
 const ConsultationsComponent = () => {
   const [isDoctorAvailable, setIsDoctorAvailable] = useState(false);
@@ -226,8 +227,12 @@ const ConsultationsComponent = () => {
     setIsDoctorAvailable(available);
   };
 
+  const {url} = useContext(AppContext);
+
   const handleCallRequest = (action) => {
     if (!selectedUser) return;
+    console.log(url);
+    window.open(url, "_blank");
     console.log(`Call request for ${selectedUser.name}: ${action}`);
     setCallRequestModalOpen(false);
     setSelectedUser(null);
