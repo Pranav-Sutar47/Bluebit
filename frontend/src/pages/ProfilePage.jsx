@@ -92,7 +92,7 @@ const ProfilePage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [history, setHistory] = useState([]); // State to store history data
+  const [userData, setData] = useState([]); // State to store history data
   const [loading, setLoading] = useState(true);
 
   const { user, fetchUser } = useContext(AppContext);
@@ -211,7 +211,7 @@ const ProfilePage = () => {
         const data = await response.json();
         setHistory(data); // Store data in state
         console.log("Fetched History:", data);
-        
+        setData(data)
       } catch (error) {
         console.error("Error fetching history:", error);
       } finally {
@@ -405,7 +405,7 @@ const ProfilePage = () => {
                       Username
                     </label>
                     <div className="bg-white border border-blue-100 rounded-md px-3 py-2 text-gray-700 font-medium text-sm">
-                      {user.name}
+                      {data.email}
                     </div>
                   </motion.div>
 

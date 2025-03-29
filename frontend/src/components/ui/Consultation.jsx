@@ -193,10 +193,11 @@ const ConsultationsComponent = () => {
       <h2 className="text-2xl font-bold mb-6">Consultations Management</h2>
       
       {!isDoctorAvailable ? (
-        <div className="flex justify-center space-x-4">
+        <div className="flex justify-center space-x-4 ">
           <Button 
             variant="default" 
             size="lg"
+            className=''
             onClick={() => handleDoctorAvailability(true)}
           >
             Set Available

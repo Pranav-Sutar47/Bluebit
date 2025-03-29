@@ -1,30 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, BellRing, CheckCircle } from 'lucide-react';
+import AppContext from '../../context/AppContext'; 
 
 const NotificationButton = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      user: { name: 'Mark Webber', avatar: 'https://www.google.com/imgres?q=avatar&imgurl=https%3A%2F%2Fm.media-amazon.com%2Fimages%2FS%2Fpv-target-images%2F16627900db04b76fae3b64266ca161511422059cd24062fb5d900971003a0b70._SX1080_FMjpg_.jpg&imgrefurl=https%3A%2F%2Fwww.primevideo.com%2Fdetail%2FAvatar-The-Way-of-Water%2F0R6MAB6Q360AL86YRENF5C0IF3&docid=MCNshJNHSv6EHM&tbnid=aTOgGFTziDgU4M&vet=12ahUKEwikqdnf-6uMAxVhxDgGHX2PAX4QM3oECBUQAA..i&w=1080&h=608&hcb=2&ved=2ahUKEwikqdnf-6uMAxVhxDgGHX2PAX4QM3oECBUQAA' },
-      action: 'reacted to your recent post',
-      timestamp: '1m ago',
-      message: 'My first tournament today! 🏆'
-    },
-    {
-      id: 2,
-      user: { name: 'Angela Gray', avatar: 'https://www.google.com/imgres?q=avatar&imgurl=https%3A%2F%2Fm.media-amazon.com%2Fimages%2FS%2Fpv-target-images%2F16627900db04b76fae3b64266ca161511422059cd24062fb5d900971003a0b70._SX1080_FMjpg_.jpg&imgrefurl=https%3A%2F%2Fwww.primevideo.com%2Fdetail%2FAvatar-The-Way-of-Water%2F0R6MAB6Q360AL86YRENF5C0IF3&docid=MCNshJNHSv6EHM&tbnid=aTOgGFTziDgU4M&vet=12ahUKEwikqdnf-6uMAxVhxDgGHX2PAX4QM3oECBUQAA..i&w=1080&h=608&hcb=2&ved=2ahUKEwikqdnf-6uMAxVhxDgGHX2PAX4QM3oECBUQAA' },
-      action: 'followed you',
-      timestamp: '5m ago'
-    },
-    {
-      id: 3,
-      user: { name: 'Jacob Thomsopan', avatar: 'https://www.google.com/imgres?q=avatar&imgurl=https%3A%2F%2Fm.media-amazon.com%2Fimages%2FS%2Fpv-target-images%2F16627900db04b76fae3b64266ca161511422059cd24062fb5d900971003a0b70._SX1080_FMjpg_.jpg&imgrefurl=https%3A%2F%2Fwww.primevideo.com%2Fdetail%2FAvatar-The-Way-of-Water%2F0R6MAB6Q360AL86YRENF5C0IF3&docid=MCNshJNHSv6EHM&tbnid=aTOgGFTziDgU4M&vet=12ahUKEwikqdnf-6uMAxVhxDgGHX2PAX4QM3oECBUQAA..i&w=1080&h=608&hcb=2&ved=2ahUKEwikqdnf-6uMAxVhxDgGHX2PAX4QM3oECBUQAA' },
-      action: 'has joined your group Chess Club',
-      timestamp: '1 day ago'
-    }
-  ]);
+  const { user } = useContext(AppContext); 
+  const [notifications, setNotifications] = useState([]);
+
+  // Set notifications from user.suggestions if available
+  React.useEffect(() => {
+    // if (user && user.suggestions) 
+      // Transform suggestions into notification format
+
+      console.log('user',user)
+
+    //   const suggestionNotifications = user.suggestions.map((suggestion, index) => ({
+    //     id: `suggestion-${index}`,
+    //     user: {
+    //       name: suggestion.from || 'System',
+    //       avatar: suggestion.avatar || '/api/placeholder/40/40' // Placeholder if no avatar
+    //     },
+    //     action: suggestion.action || 'sent a suggestion',
+    //     message: suggestion.message || suggestion.content,
+    //     timestamp: suggestion.timestamp || 'Just now'
+    //   }));
+      
+    //   setNotifications(suggestionNotifications);
+    // }
+  }, []);
 
   const handleMarkAllRead = () => {
     setNotifications([]);
