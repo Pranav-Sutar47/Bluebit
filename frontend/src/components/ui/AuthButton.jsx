@@ -74,11 +74,17 @@ const AuthButton = () => {
         }
       );
 
-      console.log('Response',response)
-
       if (response.status === 200) {
         setLogin(true);
         localStorage.setItem("token", response.data.tokens.access);
+        console.log(response);
+        if(response.data.role === 'Doctor'){
+          toast({
+            description: "Doctor Logged In Successfully!",
+            className: "bg-green-500 text-white",
+          });
+          navigate('/dashboard');
+        }else
         toast({
           description: "User Logged In Successfully!",
           className: "bg-green-500 text-white",
