@@ -4,6 +4,8 @@ import { auth, googleProvider, signInWithPopup } from "../../firebase";
 import axios from "axios";
 import AppContext from "@/context/AppContext";
 import { useToast } from "@/hooks/use-toast";
+import Notify from './Notify'
+import LoginDialog from './LoginDialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -79,25 +81,34 @@ const AuthButton = () => {
 
   if (login) {
     return (
-      <DropdownMenu>
-        <DropdownMenuTrigger>
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png"/>
-            <AvatarFallback>PF</AvatarFallback>
-          </Avatar>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuLabel className='font-[Work-Sans] '>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          {/* Add Profile link here */}
-          <DropdownMenuItem className='font-[Work-Sans] ' onClick={() => navigate("/profile")}>
-  Profile
-</DropdownMenuItem>
-
-          <DropdownMenuItem onClick={logOut} className='font-[Work-Sans] '>Log Out</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="flex items-center space-x-4"> 
+        {/* Notification Component */}
+        <Notify />
+  
+        {/* Dropdown Menu */}
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Avatar>
+              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarFallback>PF</AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel className="font-[Work-Sans]">My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="font-[Work-Sans]" onClick={() => navigate("/profile")}>
+              Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={logOut} className="font-[Work-Sans]">
+              Log Out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     );
+
+    <LoginDialog/>
+    
   } else {
     return (
       <motion.button
@@ -109,7 +120,7 @@ const AuthButton = () => {
         Login
       </motion.button>
     );
-  }
+  }  
 };
 
 export default AuthButton;

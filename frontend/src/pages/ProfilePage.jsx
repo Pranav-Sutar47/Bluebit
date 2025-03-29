@@ -1,10 +1,20 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { motion } from 'framer-motion';
-import { X, Plus, User, History, Check, ChevronRight, Shield, Clock, FileText } from 'lucide-react';
-import AppContext from '@/context/AppContext';
-import axios from 'axios';
-import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
-
+import React, { useState, useEffect, useContext } from "react";
+import { motion } from "framer-motion";
+import {
+  X,
+  Plus,
+  User,
+  History,
+  Check,
+  ChevronRight,
+  Shield,
+  Clock,
+  FileText,
+} from "lucide-react";
+import AppContext from "@/context/AppContext";
+import axios from "axios";
+import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
+import LocationSearch from "@/components/ui/LocationSearch";
 
 // SparklesEffect component
 const SparklesEffect = ({ children }) => {
@@ -14,12 +24,12 @@ const SparklesEffect = ({ children }) => {
       <motion.span
         className="absolute -inset-1 rounded-lg bg-blue-50"
         animate={{
-          opacity: [0, 0.3, 0]
+          opacity: [0, 0.3, 0],
         }}
         transition={{
           duration: 2,
           repeat: Infinity,
-          repeatType: "reverse"
+          repeatType: "reverse",
         }}
       />
     </span>
@@ -31,29 +41,61 @@ const ProfilePage = () => {
   //   email: '',
   //   username: ''
   // });
-  
+
   const [isViewHistoryOpen, setIsViewHistoryOpen] = useState(false);
   const [isAddHistoryOpen, setIsAddHistoryOpen] = useState(false);
-  
+  const [selectedLocation, setSelectedLocation] = useState(null);
+
+  useEffect(() => {
+    console.log("location ", selectedLocation);
+    console.log(selectedLocation);
+  }, [selectedLocation]);
+
   const [medicalHistory, setMedicalHistory] = useState({
-    current_disease: '',
-    past_disease: '',
-    allergy_information: '',
-    surgical_procedure: ''
+    current_disease: "",
+    past_disease: "",
+    allergy_information: "",
+    surgical_procedure: "",
   });
 
-  const [historyData, setHistoryData] = useState([{ 
-    allergyInformation: "", 
-    currentDisease: "", 
-    pastDisease: "", 
-    surgicalProcedure: "" 
-  }]);
+
+  const handleLocationSelect = async (location) => {
+    setSelectedLocation(location);
+    const { coordinates } = result.geometry; // Extract coordinates correctly
+    const locationData = {
+      latitude: coordinates[1],
+      longitude: coordinates[0],
+    };
+
+    try {
+      const response = await axios.post(
+        "https://your-backend-url.com/api/location",
+        {
+          location: location, // Adjust payload as per backend expectations
+        }
+      );
+
+      console.log("Location saved:", response.data);
+    } catch (error) {
+      console.error("Error saving location:", error);
+    }
+  };
+
+  const [historyData, setHistoryData] = useState([
+    {
+      allergyInformation: "",
+      currentDisease: "",
+      pastDisease: "",
+      surgicalProcedure: "",
+    },
+  ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [history, setHistory] = useState([]); // State to store history data
+  const [loading, setLoading] = useState(true);
 
-  const {user,fetchUser} = useContext(AppContext);
-
+  const { user, fetchUser } = useContext(AppContext);
 
   // Fetch user data and medical history
   useEffect(() => {
@@ -64,12 +106,12 @@ const ProfilePage = () => {
         setIsLoading(false);
       } catch (error) {
         setIsLoading(false);
-        console.error('Error fetching user data:', error);
+        console.error("Error fetching user data:", error);
       } finally {
         setIsLoading(false);
       }
     };
-    
+
     fetchUserData();
   }, []);
 
@@ -77,14 +119,14 @@ const ProfilePage = () => {
     const { name, value } = e.target;
     setMedicalHistory({
       ...medicalHistory,
-      [name]: value
+      [name]: value,
     });
   };
 
   useEffect(() => {
     setHistoryData((prevData) => {
       const newData = { ...prevData[0] }; // Clone the first object safely
-  
+
       if (user.allergy_information != null) {
         newData.allergyInformation = user.allergy_information;
       }
@@ -97,7 +139,7 @@ const ProfilePage = () => {
       if (user.surgical_procedure != null) {
         newData.surgicalProcedure = user.surgical_procedure;
       }
-  
+
       return [newData]; // Update state properly
     });
   }, [user]);
@@ -105,56 +147,88 @@ const ProfilePage = () => {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      const token = localStorage.getItem('token');     
+      const token = localStorage.getItem("token");
 
-      const url = String(import.meta.env.VITE_BASEURL) + 'auth/update-medical-details/';
+      const url =
+        String(import.meta.env.VITE_BASEURL) + "auth/update-medical-details/";
 
-      const response = await axios.post(
-        url,
-        medicalHistory,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        }
-      );
+      const response = await axios.post(url, medicalHistory, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.status === 200) {
         setSubmitSuccess(true);
-        
+
         // Update history data with the new entry
         if (response.data) {
-            await fetchUser();
+          await fetchUser();
         }
-        
+
         setTimeout(() => {
           setIsAddHistoryOpen(false);
           setSubmitSuccess(false);
           setMedicalHistory({
-            current_disease: '',
-            past_disease: '',
-            allergy_information: '',
-            surgical_procedure: ''
+            current_disease: "",
+            past_disease: "",
+            allergy_information: "",
+            surgical_procedure: "",
           });
         }, 1500);
       } else {
-        console.error('Failed to submit medical details');
+        console.error("Failed to submit medical details");
       }
     } catch (error) {
-      console.error('Error submitting medical details:', error);
+      console.error("Error submitting medical details:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const token = localStorage.getItem("token"); // Get token from localStorage
+
+        if (!token) {
+          throw new Error("No token found. Please log in.");
+        }
+
+        const response = await fetch("http://127.0.0.1:5000/api/user/get-history", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Set Bearer token
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch history");
+        }
+
+        const data = await response.json();
+        setHistory(data); // Store data in state
+        console.log("Fetched History:", data);
+        
+      } catch (error) {
+        console.error("Error fetching history:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, []);
+
   return (
     <div className="min-h-screen relative mt-5 pt-16 pb-12 overflow-hidden">
       {/* Background gradient effect */}
       <div className="absolute inset-0 bg-gradient-to-b from-blue-50 to-white -z-10"></div>
-      
+
       {/* Animated background blobs */}
-      <motion.div 
+      <motion.div
         className="absolute top-20 right-[10%] w-64 h-64 rounded-full bg-blue-200/30 blur-3xl"
         animate={{
           x: [0, 30, 0],
@@ -163,11 +237,11 @@ const ProfilePage = () => {
         transition={{
           repeat: Infinity,
           duration: 20,
-          ease: "easeInOut"
+          ease: "easeInOut",
         }}
       />
-      
-      <motion.div 
+
+      <motion.div
         className="absolute bottom-20 left-[10%] w-72 h-72 rounded-full bg-cyan-200/30 blur-3xl"
         animate={{
           x: [0, -40, 0],
@@ -176,7 +250,7 @@ const ProfilePage = () => {
         transition={{
           repeat: Infinity,
           duration: 25,
-          ease: "easeInOut"
+          ease: "easeInOut",
         }}
       />
 
@@ -195,26 +269,25 @@ const ProfilePage = () => {
           >
             User Profile Dashboard
           </motion.div>
-          
+
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-            <SparklesEffect>
-              Medical Profile Management
-            </SparklesEffect>
+            <SparklesEffect>Medical Profile Management</SparklesEffect>
           </h1>
           <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
-            Keep track of your medical history and maintain a comprehensive health profile
+            Keep track of your medical history and maintain a comprehensive
+            health profile
           </p>
         </motion.div>
-        
+
         {/* Profile Card */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
           className="bg-white rounded-2xl shadow-xl overflow-hidden relative max-w-4xl mx-auto"
         >
           {/* Floating elements */}
-          <motion.div 
+          <motion.div
             className="absolute top-4 right-4 bg-blue-500 text-white text-xs px-2 py-1 rounded-lg shadow-lg z-10"
             animate={{
               y: [0, -5, 0],
@@ -222,13 +295,13 @@ const ProfilePage = () => {
             transition={{
               repeat: Infinity,
               duration: 3,
-              ease: "easeInOut"
+              ease: "easeInOut",
             }}
           >
             Secure Profile
           </motion.div>
-            
-          <motion.div 
+
+          <motion.div
             className="absolute bottom-2 left-4 bg-cyan-500 text-white text-xs px-2 py-1 rounded-lg shadow-lg z-10"
             animate={{
               y: [0, 5, 0],
@@ -237,31 +310,32 @@ const ProfilePage = () => {
               repeat: Infinity,
               duration: 4,
               ease: "easeInOut",
-              delay: 1
+              delay: 1,
             }}
           >
             AI Protected
           </motion.div>
-          
+
           <div className="bg-gradient-to-r from-blue-600 to-cyan-500 h-32 sm:h-40 relative">
             <div className="absolute -bottom-16 sm:-bottom-20 left-6 sm:left-8">
-              <motion.div 
+              <motion.div
                 className="rounded-full h-32 w-32 sm:h-40 sm:w-40 border-4 border-white bg-white shadow-lg flex items-center justify-center overflow-hidden"
-                whileHover={{ 
+                whileHover={{
                   scale: 1.05,
-                  boxShadow: "0 20px 25px -5px rgba(59, 130, 246, 0.4), 0 8px 10px -6px rgba(59, 130, 246, 0.2)"
+                  boxShadow:
+                    "0 20px 25px -5px rgba(59, 130, 246, 0.4), 0 8px 10px -6px rgba(59, 130, 246, 0.2)",
                 }}
               >
                 <Avatar className="h-full w-full flex items-center justify-center">
-                <AvatarFallback className="text-4xl sm:text-5xl font-semibold text-gray-600">
-                  {user?.name?.charAt(0)}
-                </AvatarFallback>
+                  <AvatarFallback className="text-4xl sm:text-5xl font-semibold text-gray-600">
+                    {user?.name?.charAt(0)}
+                  </AvatarFallback>
                 </Avatar>
                 {/* <User size={64} className="text-gray-400" /> */}
               </motion.div>
             </div>
           </div>
-          
+
           {isLoading ? (
             <div className="pt-20 pb-8 px-6 text-center">
               <div className="animate-pulse flex flex-col items-center">
@@ -274,21 +348,24 @@ const ProfilePage = () => {
             <div className="pt-20 sm:pt-24 pb-8 px-6">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900 mb-1">{user.username}</h1>
+                  <h1 className="text-2xl font-bold text-gray-900 mb-1">
+                    {user.username}
+                  </h1>
                   <p className="text-gray-600 flex items-center text-sm">
                     <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>
                     {user.email}
                   </p>
                 </div>
-                
+
                 <div className="mt-4 sm:mt-0 flex flex-col xs:flex-row gap-3">
                   {historyData.length > 0 && (
-                    <motion.button 
+                    <motion.button
                       onClick={() => setIsViewHistoryOpen(true)}
                       className="inline-flex items-center justify-center px-4 py-2 bg-white hover:bg-gray-50 border border-gray-300 rounded-lg text-gray-700 font-medium text-sm transition-all"
-                      whileHover={{ 
+                      whileHover={{
                         scale: 1.03,
-                        boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)"
+                        boxShadow:
+                          "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
                       }}
                       whileTap={{ scale: 0.98 }}
                     >
@@ -296,12 +373,13 @@ const ProfilePage = () => {
                       View History
                     </motion.button>
                   )}
-                  <motion.button 
+                  <motion.button
                     onClick={() => setIsAddHistoryOpen(true)}
                     className="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-lg font-medium text-sm transition-all shadow-md"
-                    whileHover={{ 
+                    whileHover={{
                       scale: 1.03,
-                      boxShadow: "0 10px 15px -3px rgba(59, 130, 246, 0.4), 0 4px 6px -2px rgba(59, 130, 246, 0.2)"
+                      boxShadow:
+                        "0 10px 15px -3px rgba(59, 130, 246, 0.4), 0 4px 6px -2px rgba(59, 130, 246, 0.2)",
                     }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -310,47 +388,51 @@ const ProfilePage = () => {
                   </motion.button>
                 </div>
               </div>
-              
+
               <div className="border-t border-gray-200 pt-6">
                 <h2 className="text-lg font-semibold mb-4 flex items-center">
                   <FileText size={18} className="text-blue-500 mr-2" />
                   Profile Information
                 </h2>
-                
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <motion.div 
+                  <motion.div
                     className="bg-blue-50 rounded-xl p-4 hover:shadow-md transition-shadow"
                     whileHover={{ y: -3 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <label className="block text-xs font-medium text-blue-600 mb-1">Username</label>
+                    <label className="block text-xs font-medium text-blue-600 mb-1">
+                      Username
+                    </label>
                     <div className="bg-white border border-blue-100 rounded-md px-3 py-2 text-gray-700 font-medium text-sm">
                       {user.name}
                     </div>
                   </motion.div>
-                  
-                  <motion.div 
+
+                  <motion.div
                     className="bg-cyan-50 rounded-xl p-4 hover:shadow-md transition-shadow"
                     whileHover={{ y: -3 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <label className="block text-xs font-medium text-cyan-600 mb-1">Email Address</label>
+                    <label className="block text-xs font-medium text-cyan-600 mb-1">
+                      Email Address
+                    </label>
                     <div className="bg-white border border-cyan-100 rounded-md px-3 py-2 text-gray-700 font-medium text-sm">
                       {user.email}
                     </div>
                   </motion.div>
                 </div>
               </div>
-              
+
               <div className="mt-6">
                 <h2 className="text-lg font-semibold mb-4 flex items-center">
                   <Shield size={18} className="text-blue-500 mr-2" />
                   Medical Info Summary
                 </h2>
-                
+
                 {historyData.length > 0 ? (
                   <div className="space-y-4">
-                    <motion.div 
+                    <motion.div
                       className="flex items-center space-x-3"
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -360,12 +442,17 @@ const ProfilePage = () => {
                         <Clock className="h-5 w-5 text-blue-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-700 font-medium">Last updated</p>
-                        <p className="text-sm text-gray-500">{historyData[0]?.date || new Date().toLocaleDateString()}</p>
+                        <p className="text-sm text-gray-700 font-medium">
+                          Last updated
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {historyData[0]?.date ||
+                            new Date().toLocaleDateString()}
+                        </p>
                       </div>
                     </motion.div>
-                    
-                    <motion.div 
+
+                    <motion.div
                       className="flex items-center space-x-3"
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -387,12 +474,16 @@ const ProfilePage = () => {
                         </svg>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-700 font-medium">Current condition</p>
-                        <p className="text-sm text-gray-500">{historyData[0].currentDisease || 'None reported'}</p>
+                        <p className="text-sm text-gray-700 font-medium">
+                          Current condition
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {historyData[0].currentDisease || "None reported"}
+                        </p>
                       </div>
                     </motion.div>
-                    
-                    <motion.div 
+
+                    <motion.div
                       className="flex items-center space-x-3"
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -414,25 +505,32 @@ const ProfilePage = () => {
                         </svg>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-700 font-medium">Allergies</p>
-                        <p className="text-sm text-gray-500">{historyData[0].allergyInformation || 'None reported'}</p>
+                        <p className="text-sm text-gray-700 font-medium">
+                          Allergies
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {historyData[0].allergyInformation || "None reported"}
+                        </p>
                       </div>
                     </motion.div>
                   </div>
                 ) : (
                   <div className="bg-blue-50 rounded-xl p-4 text-center">
-                    <p className="text-gray-600">No medical history available. Add your first record to get started.</p>
+                    <p className="text-gray-600">
+                      No medical history available. Add your first record to get
+                      started.
+                    </p>
                   </div>
                 )}
               </div>
             </div>
           )}
         </motion.div>
-        
+
         {/* View History Modal */}
         {isViewHistoryOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
@@ -440,48 +538,68 @@ const ProfilePage = () => {
               className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[80vh] overflow-hidden"
             >
               <div className="bg-gradient-to-r from-blue-600 to-cyan-500 px-6 py-4 flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-white">Medical History</h2>
-                <button 
+                <h2 className="text-xl font-semibold text-white">
+                  Medical History
+                </h2>
+                <button
                   onClick={() => setIsViewHistoryOpen(false)}
                   className="text-white hover:text-blue-100"
                 >
                   <X size={20} />
                 </button>
               </div>
-              
+
               <div className="p-6 overflow-y-auto max-h-[calc(80vh-60px)]">
                 {historyData.length > 0 ? (
                   <div className="space-y-4">
-                    {historyData.map((record,index) => (
-                      <motion.div 
+                    {historyData.map((record, index) => (
+                      <motion.div
                         key={index}
                         className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-100 rounded-xl p-4 hover:shadow-lg transition-all"
                         whileHover={{ y: -3 }}
                         transition={{ duration: 0.3 }}
                       >
                         <div className="flex justify-between items-center mb-3">
-                          <h3 className="font-medium text-blue-600 text-sm">Record from {record.date}</h3>
+                          <h3 className="font-medium text-blue-600 text-sm">
+                            Record from {record.date}
+                          </h3>
                           <div className="bg-white text-xs px-2 py-1 rounded-full shadow text-blue-600">
                             Entry #{record.id}
                           </div>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div className="bg-white rounded-lg p-3 shadow-sm">
-                            <p className="text-xs text-blue-500 font-medium">Current Disease</p>
-                            <p className="text-gray-900 font-medium text-sm mt-1">{record.currentDisease || 'None'}</p>
+                            <p className="text-xs text-blue-500 font-medium">
+                              Current Disease
+                            </p>
+                            <p className="text-gray-900 font-medium text-sm mt-1">
+                              {history.current_disease || None}
+                            </p>
                           </div>
                           <div className="bg-white rounded-lg p-3 shadow-sm">
-                            <p className="text-xs text-blue-500 font-medium">Past Disease</p>
-                            <p className="text-gray-900 font-medium text-sm mt-1">{record.pastDisease || 'None'}</p>
+                            <p className="text-xs text-blue-500 font-medium">
+                              Past Disease
+                            </p>
+                            <p className="text-gray-900 font-medium text-sm mt-1">
+                              {history.past_disease || "None"}
+                            </p>
                           </div>
                           <div className="bg-white rounded-lg p-3 shadow-sm">
-                            <p className="text-xs text-blue-500 font-medium">Allergies</p>
-                            <p className="text-gray-900 font-medium text-sm mt-1">{record.allergyInformation || 'None'}</p>
+                            <p className="text-xs text-blue-500 font-medium">
+                              Allergies
+                            </p>
+                            <p className="text-gray-900 font-medium text-sm mt-1">
+                              {history.allergy_information || "None"}
+                            </p>
                           </div>
                           <div className="bg-white rounded-lg p-3 shadow-sm">
-                            <p className="text-xs text-blue-500 font-medium">Surgical Procedures</p>
-                            <p className="text-gray-900 font-medium text-sm mt-1">{record.surgicalProcedure || 'None'}</p>
+                            <p className="text-xs text-blue-500 font-medium">
+                              Surgical Procedures
+                            </p>
+                            <p className="text-gray-900 font-medium text-sm mt-1">
+                              {history.surgical_procedure || "None"}
+                            </p>
                           </div>
                         </div>
                       </motion.div>
@@ -492,39 +610,51 @@ const ProfilePage = () => {
                     <div className="bg-blue-100 inline-flex items-center justify-center w-16 h-16 rounded-full mb-4">
                       <History size={24} className="text-blue-500" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No medical history found</h3>
-                    <p className="text-gray-500 max-w-md mx-auto text-sm">Add your first medical record to keep track of your health information.</p>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      No medical history found
+                    </h3>
+                    <p className="text-gray-500 max-w-md mx-auto text-sm">
+                      Add your first medical record to keep track of your health
+                      information.
+                    </p>
                   </div>
                 )}
               </div>
             </motion.div>
           </div>
         )}
-        
+
         {/* Add History Modal */}
         {isAddHistoryOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden"
+              className="bg-white rounded-xl shadow-2xl w-full md:w-[90%] lg:w-[70%] max-w-3xl max-h-screen overflow-y-auto"
             >
               <div className="bg-gradient-to-r from-blue-600 to-cyan-500 px-5 py-3 flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-white">Add Medical History</h2>
-                <button 
+                <h2 className="text-lg font-semibold text-white">
+                  Add Medical History
+                </h2>
+                <button
                   onClick={() => setIsAddHistoryOpen(false)}
                   className="text-white hover:text-blue-100"
                 >
                   <X size={18} />
                 </button>
               </div>
-              
+
               <div className="p-5">
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="currentDisease" className="block text-xs font-medium text-blue-600 mb-1">Current Disease</label>
+                    <label
+                      htmlFor="currentDisease"
+                      className="block text-xs font-medium text-blue-600 mb-1"
+                    >
+                      Current Disease
+                    </label>
                     <input
                       type="text"
                       id="current_disease"
@@ -535,9 +665,14 @@ const ProfilePage = () => {
                       placeholder="Enter current conditions"
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="pastDisease" className="block text-xs font-medium text-blue-600 mb-1">Past Disease</label>
+                    <label
+                      htmlFor="pastDisease"
+                      className="block text-xs font-medium text-blue-600 mb-1"
+                    >
+                      Past Disease
+                    </label>
                     <input
                       type="text"
                       id="past_disease"
@@ -548,9 +683,14 @@ const ProfilePage = () => {
                       placeholder="Enter past conditions"
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="allergyInformation" className="block text-xs font-medium text-blue-600 mb-1">Allergy Information</label>
+                    <label
+                      htmlFor="allergyInformation"
+                      className="block text-xs font-medium text-blue-600 mb-1"
+                    >
+                      Allergy Information
+                    </label>
                     <input
                       type="text"
                       id="allergy_information"
@@ -561,9 +701,14 @@ const ProfilePage = () => {
                       placeholder="Enter allergies"
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="surgicalProcedure" className="block text-xs font-medium text-blue-600 mb-1">Surgical Procedure</label>
+                    <label
+                      htmlFor="surgicalProcedure"
+                      className="block text-xs font-medium text-blue-600 mb-1"
+                    >
+                      Surgical Procedure
+                    </label>
                     <input
                       type="text"
                       id="surgical_procedure"
@@ -574,8 +719,22 @@ const ProfilePage = () => {
                       placeholder="Enter surgical procedures"
                     />
                   </div>
+
+                  <div>
+                    <label
+                      htmlFor="locationInput"
+                      className="block text-xs font-medium text-blue-600 mb-1"
+                    >
+                      Location
+                    </label>
+                    <LocationSearch
+                      id="locationInput"
+                      className="w-full" 
+                      onSelectLocation={handleLocationSelect}
+                    />
+                  </div>
                 </div>
-                
+
                 <div className="mt-6 flex justify-end">
                   <motion.button
                     type="button"
@@ -591,11 +750,14 @@ const ProfilePage = () => {
                     onClick={handleSubmit}
                     disabled={isSubmitting}
                     className={`px-4 py-2 rounded-lg shadow-md text-xs font-medium text-white transition-colors relative ${
-                      submitSuccess ? 'bg-green-600' : 'bg-gradient-to-r from-blue-600 to-cyan-500'
+                      submitSuccess
+                        ? "bg-green-600"
+                        : "bg-gradient-to-r from-blue-600 to-cyan-500"
                     }`}
-                    whileHover={{ 
+                    whileHover={{
                       scale: 1.03,
-                      boxShadow: "0 10px 15px -3px rgba(59, 130, 246, 0.4), 0 4px 6px -2px rgba(59, 130, 246, 0.2)"
+                      boxShadow:
+                        "0 10px 15px -3px rgba(59, 130, 246, 0.4), 0 4px 6px -2px rgba(59, 130, 246, 0.2)",
                     }}
                     whileTap={{ scale: 0.98 }}
                   >
