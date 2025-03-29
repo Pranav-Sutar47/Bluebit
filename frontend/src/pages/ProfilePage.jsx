@@ -58,27 +58,16 @@ const ProfilePage = () => {
     surgical_procedure: "",
   });
 
+  const [locationData,setLocationData] = useState({});
 
   const handleLocationSelect = async (location) => {
     setSelectedLocation(location);
-    const { coordinates } = result.geometry; // Extract coordinates correctly
-    const locationData = {
+    const { coordinates } = selectedLocation.geometry; 
+    console.log('coordinates ->',coordinates)// Extract coordinates correctly
+    setLocationData({
       latitude: coordinates[1],
       longitude: coordinates[0],
-    };
-
-    try {
-      const response = await axios.post(
-        "https://your-backend-url.com/api/location",
-        {
-          location: location, // Adjust payload as per backend expectations
-        }
-      );
-
-      console.log("Location saved:", response.data);
-    } catch (error) {
-      console.error("Error saving location:", error);
-    }
+    })
   };
 
   const [historyData, setHistoryData] = useState([
@@ -149,41 +138,30 @@ const ProfilePage = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const url =
-        String(import.meta.env.VITE_BASEURL) + "auth/update-medical-details/";
-
-      const response = await axios.post(url, medicalHistory, {
+      const mergedData = {
+        ...medicalHistory,
+        location: selectedLocation.geometry
+      };
+      
+      const url = String(import.meta.env.VITE_BACKEND)+"/user/add-history";
+      const response = await axios.post(url,mergedData,{
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+          'Authorization': `Bearer ${token}`
+        }
       });
 
-      if (response.status === 200) {
+      if(response.status === 200)
         setSubmitSuccess(true);
-
-        // Update history data with the new entry
-        if (response.data) {
-          await fetchUser();
-        }
-
-        setTimeout(() => {
-          setIsAddHistoryOpen(false);
-          setSubmitSuccess(false);
-          setMedicalHistory({
-            current_disease: "",
-            past_disease: "",
-            allergy_information: "",
-            surgical_procedure: "",
-          });
-        }, 1500);
-      } else {
-        console.error("Failed to submit medical details");
-      }
+      else
+        setSubmitSuccess(false);
     } catch (error) {
       console.error("Error submitting medical details:", error);
     } finally {
       setIsSubmitting(false);
+      setMedicalHistory(prevState => {
+        return Object.fromEntries(Object.keys(prevState).map(key => [key, ""]));
+      });
+      setSubmitSuccess(false);      
     }
   };
 
@@ -195,30 +173,22 @@ const ProfilePage = () => {
         if (!token) {
           throw new Error("No token found. Please log in.");
         }
-
-        const response = await fetch("http://127.0.0.1:5000/api/user/get-history", {
-          method: "GET",
+        const url = String(import.meta.env.VITE_BACKEND)+"/user/get-history";
+        const response = await axios.get(url,{
           headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Set Bearer token
-          },
+            'Authorization': `Bearer ${token}`
+          }
         });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch history");
-        }
-
-        const data = await response.json();
-        setHistory(data); // Store data in state
-        console.log("Fetched History:", data);
-        setData(data)
+        if(response.status === 200){
+          setHistory(response.data.data);
+        }else 
+          setHistory([]);
       } catch (error) {
         console.error("Error fetching history:", error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchHistory();
   }, []);
 
@@ -574,7 +544,7 @@ const ProfilePage = () => {
                               Current Disease
                             </p>
                             <p className="text-gray-900 font-medium text-sm mt-1">
-                              {history.current_disease || None}
+                              {history.current_disease || 'None'}
                             </p>
                           </div>
                           <div className="bg-white rounded-lg p-3 shadow-sm">

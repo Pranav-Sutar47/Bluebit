@@ -31,7 +31,7 @@
 #     def __str__(self):
 #         return self.email
 
-from mongoengine import Document, fields
+from mongoengine import Document, fields, PointField
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import PermissionsMixin
 from django.utils.translation import gettext_lazy as _
@@ -51,6 +51,7 @@ class User(Document):
     #Other fields
     active = fields.BooleanField(default=True)
     suggestions = fields.StringField(null=True,blank=True)
+    location = PointField(null=True)
     
     # Auth Fields
     is_active = fields.BooleanField(default=True) 

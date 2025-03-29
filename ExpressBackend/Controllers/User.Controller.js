@@ -2,6 +2,7 @@ const User = require('../Models/User.Model');
 const asyncHandler = require('../Middleware/asyncHandler');
 const ApiResponse = require("../Utils/ApiResponse");
 const ApiError = require("../Utils/ApiError");
+const axios = require('axios');
 
 //Route to get all active patients
 exports.getUsers = asyncHandler(async(req,res)=>{
@@ -55,14 +56,14 @@ exports.addMedicalDetails = asyncHandler(async(req,res,next)=>{
     if(!user)
         return next(new ApiError('User not found',404));
 
-    const {current_disease,past_disease,allergy_information,surgical_procedure} = req.body;
+    const {current_disease,past_disease,allergy_information,surgical_procedure,location} = req.body;
 
-    if(!current_disease || !past_disease || !allergy_information || !surgical_procedure)
+    if(!current_disease || !past_disease || !allergy_information || !surgical_procedure || !location)
         return next(new ApiError('Please Provide all the details',400));
 
     const updated = await User.findOneAndUpdate(
         { email: user.email },
-        {current_disease:current_disease,past_disease:past_disease,allergy_information:allergy_information,surgical_procedure:surgical_procedure},
+        {current_disease:current_disease,past_disease:past_disease,allergy_information:allergy_information,surgical_procedure:surgical_procedure,location:location},
         { new: true}
     );
 
@@ -73,10 +74,8 @@ exports.addMedicalDetails = asyncHandler(async(req,res,next)=>{
 });
 
 exports.addSuggestions = asyncHandler(async(req,res,next)=>{
-    const user = req.user;
 
-    if(!user)
-        return next(new ApiError('User not found',404));
+    const {id} = req.params;
 
     const {suggestions} = req.body;
 
@@ -84,7 +83,7 @@ exports.addSuggestions = asyncHandler(async(req,res,next)=>{
         return next(new ApiError('Please provide Suggestion',400));
 
     const updated = await User.findOneAndUpdate(
-        {email:user.email},
+        {_id:id},
         {suggestions:suggestions},
         { new: true}
     );
@@ -109,3 +108,61 @@ exports.logOut = asyncHandler(async(req,res,next)=>{
 
     return res.status(200).json(new ApiResponse(200,'Logout successfully !',updated));
 });
+
+exports.addLocation = asyncHandler(async(req,res,next)=>{
+    const user = req.user;
+    if(!user)
+        return next(new ApiError('User not found',404));
+    const {location} = req.body;
+    if (!location || !Array.isArray(location) || location.length !== 2) {
+        return next(new ApiError("Invalid coordinates format. Expected [longitude, latitude]", 400));
+    }
+    const updatedUser = await User.findOneAndUpdate(
+        { _id: user._id },
+        { location: { type: "Point", location:location } },
+        { new: true}
+    );    
+    if(!updatedUser)
+        return next(new ApiError('Location not updated',400));
+    res.status(200).json(new ApiResponse(200,'Location Updated Successfully!',updatedUser));
+});
+
+exports.nearbyLocation = asyncHandler(async(req,res,next)=>{
+    const user = req.user;
+    if(!user)
+        return next(new ApiError('User not found',404));
+    const userData = await User.findById(user.user_id).select("location");
+    console.log(userData);
+    if (!userData || !userData.location) {
+        return next(new ApiError("User location not found", 400));
+    }
+    const [longitude, latitude] = userData.location.coordinates;
+
+    console.log('long->',longitude,'\n lat->',latitude);
+
+    try{
+        const OSM_API_URL = `https://overpass-api.de/api/interpreter`;
+        const query = `
+            [out:json];
+            node
+                [amenity=hospital]
+                (around:5000, ${latitude}, ${longitude});
+            out;
+        `;
+        const response = await axios.get(OSM_API_URL, {
+            params: { data: query },
+        });
+
+        const hospitals = response.data.elements.map(hospital => ({
+            name: hospital.tags.name || "Unknown",
+            lat: hospital.lat,
+            lon: hospital.lon,
+        }));
+
+        res.status(200).json(new ApiResponse(200, "Nearby Medical Centers", hospitals));
+    }catch(err){
+        console.error(err);
+        return next(new ApiError("Error fetching nearby hospitals", 500));
+    }
+});
+

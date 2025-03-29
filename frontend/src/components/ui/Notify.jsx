@@ -1,37 +1,14 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, BellRing, CheckCircle } from 'lucide-react';
-import AppContext from '../../context/AppContext'; 
+import AppContext from '@/context/AppContext';
 
 const NotificationButton = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { user } = useContext(AppContext); 
-  const [notifications, setNotifications] = useState([]);
-
-  // Set notifications from user.suggestions if available
-  React.useEffect(() => {
-    // if (user && user.suggestions) 
-      // Transform suggestions into notification format
-
-      console.log('user',user)
-
-    //   const suggestionNotifications = user.suggestions.map((suggestion, index) => ({
-    //     id: `suggestion-${index}`,
-    //     user: {
-    //       name: suggestion.from || 'System',
-    //       avatar: suggestion.avatar || '/api/placeholder/40/40' // Placeholder if no avatar
-    //     },
-    //     action: suggestion.action || 'sent a suggestion',
-    //     message: suggestion.message || suggestion.content,
-    //     timestamp: suggestion.timestamp || 'Just now'
-    //   }));
-      
-    //   setNotifications(suggestionNotifications);
-    // }
-  }, []);
+  const [notifications, setNotifications] = useState('');
 
   const handleMarkAllRead = () => {
-    setNotifications([]);
+    setNotifications('');
   };
 
   const toggleDropdown = () => {
@@ -45,9 +22,13 @@ const NotificationButton = () => {
     }
   };
 
+  const {user} = useContext(AppContext);
+
   // Add event listener when dropdown is open
   React.useEffect(() => {
     if (isDropdownOpen) {
+      console.log('user',user);
+      setNotifications([user.suggestions]);
       document.addEventListener('mousedown', handleClickOutside);
       return () => {
         document.removeEventListener('mousedown', handleClickOutside);
@@ -116,9 +97,9 @@ const NotificationButton = () => {
                   No notifications
                 </div>
               ) : (
-                notifications.map((notification) => (
+                notifications.map((notification,index) => (
                   <motion.div
-                    key={notification.id}
+                    key={index}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.2 }}
@@ -126,23 +107,14 @@ const NotificationButton = () => {
                   >
                     <div className="flex items-center space-x-3">
                       <img 
-                        src={notification.user.avatar} 
-                        alt={notification.user.name} 
+                        src={'icon.svg'} 
+                        alt={'Image'} 
                         className="w-10 h-10 rounded-full"
                       />
                       <div className="flex-1">
                         <p className="text-sm">
-                          <span className="font-semibold">{notification.user.name}</span>{' '}
-                          {notification.action}
+                          <span className="font-semibold">{notification}</span>{' '}
                         </p>
-                        {notification.message && (
-                          <p className="text-xs text-gray-500 mt-1">
-                            {notification.message}
-                          </p>
-                        )}
-                        <span className="text-xs text-gray-400 block mt-1">
-                          {notification.timestamp}
-                        </span>
                       </div>
                     </div>
                   </motion.div>

@@ -29,14 +29,32 @@ const AuthButton = () => {
 
   const { toast } = useToast();
 
-  const logOut = ()=>{
-      localStorage.clear();
-      setLogin(prev=>!prev);
-      toast({
-        description: "User Logged Out Successfully!",
-        className: "bg-green-500 text-white",
+  const logOut = async()=>{
+    try{
+      const token = localStorage.getItem("token");
+      const url = String(import.meta.env.VITE_BACKEND)+"/user/logout";
+      const response = await axios.get(url,{
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
-      navigate('/');
+      if(response.status === 200){
+        localStorage.clear();
+        setLogin(prev=>!prev);
+        toast({
+          description: "User Logged Out Successfully!",
+          className: "bg-green-500 text-white",
+        });
+        navigate('/');
+      }else{
+        toast({
+          description: "Error while Logout!",
+          variant: "destructive",
+        });
+      } 
+    }catch(err){
+      console.error('Error at Logout',err);
+    }
   }
 
   const handleLogin = async () => {

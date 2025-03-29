@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {upload} = require('../config/cloudinaryConfig');
 const { doctorValidation } = require('../Middleware/Doctor.middleware');
-const { addDoctorInfo, getDoctorInfo, logOut, takeCall, getActiveDoctors } = require('../Controllers/Doctor.Controller');
+const { addDoctorInfo, getDoctorInfo, logOut, takeCall, getActiveDoctors, getName } = require('../Controllers/Doctor.Controller');
 const { verifyToken } = require('../Middleware/User.middleware');
 
 
@@ -15,6 +15,8 @@ router.route('/logout').get(verifyToken,logOut);
 router.route('/toggleCall').get(verifyToken,takeCall);
 
 router.route('/get-active-doctors').get(verifyToken,getActiveDoctors);
+
+router.route('/get-name').get(verifyToken,getName);
 
 module.exports = router;
 

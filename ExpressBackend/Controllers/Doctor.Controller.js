@@ -14,11 +14,11 @@ exports.addDoctorInfo = asyncHandler(async(req,res,next)=>{
     const userId = userData._id;
 
     if (!user || !user.email) {
-        return next(new ApiError("Invalid user data", 400));
+        throw new ApiError("Invalid user data", 400);
     }
 
     if (!req.file) 
-        return next(new ApiError('No file uploaded !',400));
+        throw new ApiError('No file uploaded !',400);
 
     const imageUrl = req.file.path;
 
@@ -37,7 +37,7 @@ exports.addDoctorInfo = asyncHandler(async(req,res,next)=>{
     if(doctor)
         res.status(201).json(new ApiResponse(201,'Doctor data saved successfully!',doctor));
     else 
-        return next(new ApiError('Error while saving doctor data',400));
+        throw new ApiError('Error while saving doctor data',400);
 });
 
 exports.getDoctorInfo = asyncHandler(async(req,res,next)=>{
@@ -78,4 +78,13 @@ exports.takeCall = asyncHandler(async(req,res,next)=>{
 exports.getActiveDoctors = asyncHandler(async(req,res,next)=>{
     const doctors = await Doctor.find({active:true,takeACall:true});
     res.status(200).json(new ApiResponse(200,'Active Doctors Fetched',doctors));
+});
+
+exports.getName = asyncHandler(async(req,res,next)=>{
+    const user = req.user;
+    // console.log(user);
+    const name = await Doctor.findOne({userId:user.user_id}).select('name');
+    if(!name)
+        return next(new ApiError('No Doctor found',404)); 
+    res.status(200).json(new ApiResponse(200,'Name fetched Successfully',name));
 });
