@@ -17,6 +17,7 @@ import {
   DialogFooter 
 } from "@/components/ui/dialog";
 import AppContext from '../context/AppContext'; // Adjust path as needed
+import axios from 'axios';
 
 const ConsultationsComponent = () => {
   const { user } = useContext(AppContext);
@@ -31,34 +32,21 @@ const ConsultationsComponent = () => {
       setLoading(true);
       try {
         const token = localStorage.getItem('token');
-        const url = String(import.meta.env.VITE_BASEURL) + 'doctors/active';
+        const url = String(import.meta.env.VITE_BACKEND) + 'doctors/get-active-doctors';
         
-        const response = await fetch(url, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+        const response = await axios.get(url,{
+            headers:{
+                'Authorization':`Bearer ${token}`
+            }
         });
         
-        if (response.ok) {
-          const data = await response.json();
-          setActiveDoctors(data.doctors || []);
+        if (response.status === 200) {
+            setActiveDoctors(response.data.data);
         } else {
-          console.error('Failed to fetch active doctors');
-          // For demo/testing, use sample data if API fails
-          setActiveDoctors([
-            { _id: "1", name: "Dr. James Wilson", degree: "MD", specialization: "Cardiology", status: "available" },
-            { _id: "2", name: "Dr. Sarah Chen", degree: "MBBS, DM", specialization: "Neurology", status: "available" },
-            { _id: "3", name: "Dr. Michael Rodriguez", degree: "MD, PhD", specialization: "Oncology", status: "available" }
-          ]);
+            setActiveDoctors([]);
         }
       } catch (error) {
         console.error('Error fetching doctors:', error);
-        // Fallback sample data
-        setActiveDoctors([
-          { _id: "1", name: "Dr. James Wilson", degree: "MD", specialization: "Cardiology", status: "available" },
-          { _id: "2", name: "Dr. Sarah Chen", degree: "MBBS, DM", specialization: "Neurology", status: "available" },
-          { _id: "3", name: "Dr. Michael Rodriguez", degree: "MD, PhD", specialization: "Oncology", status: "available" }
-        ]);
       } finally {
         setLoading(false);
       }
